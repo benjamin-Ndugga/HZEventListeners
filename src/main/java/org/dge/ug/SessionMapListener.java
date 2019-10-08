@@ -33,63 +33,56 @@ public class SessionMapListener implements EntryRemovedListener<String, Integer>
     @Override
     public void entryRemoved(EntryEvent<String, Integer> event) {
         LOGGER.log(Level.INFO, "ENTRY-REMOVED >>> {0}", event.getKey());
-        //processEvent(event.getKey());
+        processEvent(event.getKey());
     }
 
     @Override
     public void entryEvicted(EntryEvent<String, Integer> event) {
 
         LOGGER.log(Level.INFO, "ENTRY-EVICTED >>> {0}", event.getKey());
-        //processEvent(event.getKey());
+        processEvent(event.getKey());
     }
 
     @Override
     public void mapEvicted(MapEvent event) {
-
+        
         LOGGER.log(Level.INFO, "MAP-EVICTED-COUNT >>> {0}", event.getNumberOfEntriesAffected());
-
-        //clearAll();
+        clearAll();
     }
 
     @Override
     public void mapCleared(MapEvent event) {
 
         LOGGER.log(Level.INFO, "MAP-CLEARED-COUNT >>> {0}", event.getNumberOfEntriesAffected());
-
-        //clearAll();
+        clearAll();
     }
 
     private void clearAll() {
-
         HazelcastInstance client = connectToHzInstance();
         MultiMap<String, UserInput> multiMap = client.getMultiMap(CACHE_CUSTOMER_MULTI_MAP_NAME);
         multiMap.clear();
         client.shutdown();
-
     }
 
     private void processEvent(String key) {
-
         if (key == null) {
 
             LOGGER.log(Level.INFO, "NO-VALUE-FOUND | {0}", key);
 
         } else {
-
+            
             LOGGER.log(Level.INFO, "CLEARING-MULTI-MAP KEY >>> | {0}", key);
 
             HazelcastInstance client = connectToHzInstance();
             MultiMap<String, UserInput> multiMap = client.getMultiMap(CACHE_CUSTOMER_MULTI_MAP_NAME);
             multiMap.remove(key);
             client.shutdown();
-
         }
     }
 
     private HazelcastInstance connectToHzInstance() {
 
         ClientConfig clientConfig = new ClientConfig();
-
         clientConfig.setGroupConfig(new GroupConfig("dev", "dev-pass"));
         ClientNetworkConfig networkConfig = clientConfig.getNetworkConfig();
 

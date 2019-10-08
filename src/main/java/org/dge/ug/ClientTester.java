@@ -27,8 +27,14 @@ public class ClientTester {
         HazelcastInstance client = connectToHzInstance();
         IMap<String, Integer> map = client.getMap("map1");
         
-        //map.put("key1",1,5,TimeUnit.SECONDS);
-        map.put("key2",3,20,TimeUnit.SECONDS);
+        //test eviction after 5 seconds
+        map.put("key1",1,5,TimeUnit.SECONDS);
+        
+        //test update operation | no operations are expected to be cascaded to the MapListener
+        //map.put("key1",5);
+        
+        //test eviction after 2 seconds
+        //map.put("key2",2,20,TimeUnit.SECONDS);
         
         client.shutdown();
         
